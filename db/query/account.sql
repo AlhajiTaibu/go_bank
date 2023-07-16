@@ -8,7 +8,7 @@ WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE;
 
 -- name: ListAccounts :many
 SELECT * FROM accounts
-ORDER BY owner;
+ORDER BY owner LIMIT $1 OFFSET $2;
 
 -- name: CreateAccount :one
 INSERT INTO accounts (

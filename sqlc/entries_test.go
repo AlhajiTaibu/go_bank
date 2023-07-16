@@ -60,8 +60,11 @@ func TestListEntires(t *testing.T){
 	for i:=0; i<10; i++{
 		createEntries(t)
 	}
-
-	entries, err := testQueries.ListEntries(context.Background())
+	args := ListEntriesParams{
+		Limit: 10,
+		Offset: 0,
+	}
+	entries, err := testQueries.ListEntries(context.Background(), args)
 
 	require.NoError(t, err, "No errors")
 

@@ -4,7 +4,7 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListEntries :many
 SELECT * FROM entries
-ORDER BY created_at;
+ORDER BY created_at LIMIT $1 OFFSET $2;
 
 -- name: CreateEntry :one
 INSERT INTO entries (

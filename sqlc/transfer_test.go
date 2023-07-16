@@ -58,7 +58,11 @@ func TestListTransfer(t *testing.T){
 		createTransfers(t)
 	}
 
-	transfers, err := testQueries.ListTransfers(context.Background())
+	args := ListTransfersParams{
+		Limit: 10,
+		Offset: 0,
+	}
+	transfers, err := testQueries.ListTransfers(context.Background(), args)
 
 	require.NoError(t, err)
 

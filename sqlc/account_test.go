@@ -62,8 +62,11 @@ func TestListAccounts(t *testing.T){
 	for i:=0; i<10; i++{
 		createAccounts(t)
 	}
-
-	accounts, err := testQueries.ListAccounts(context.Background())
+	args := ListAccountsParams{
+		Limit: 10,
+		Offset: 0,
+	}
+	accounts, err := testQueries.ListAccounts(context.Background(), args)
 
 	require.NoError(t, err, "No errors")
 
