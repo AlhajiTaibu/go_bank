@@ -102,7 +102,18 @@ func (server *Server) updateAccount(ctx *gin.Context){
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
+	account1, err := server.store.Queries.GetAccount(ctx, req.ID)
+
+	if err != nil {
+		if err == sql.ErrNoRows{
+			ctx.IndentedJSON(http.StatusNotFound, errorResponse(err))
+		}
+		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
+	}
+
 	args := db.UpdateAccountParams{
+		ID: account1.ID,
 		Balance: reqx.Balance,
 		Owner: reqx.Owner,
 		Currency: reqx.Currency,
@@ -114,4 +125,22 @@ func (server *Server) updateAccount(ctx *gin.Context){
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, account)
+}
+
+func (server *Server) deleteAccount(ctx *gin.Context){
+	var req getAccountRequest
+	
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	err := server.store.Queries.DeleteAccount(ctx, req.ID)
+	
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.IndentedJSON(http.StatusNoContent, "Account deleted")
 }

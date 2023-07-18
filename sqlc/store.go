@@ -82,7 +82,7 @@ func (s *Store) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParams) 
 
 		fmt.Println(txName, "create to_entry" )
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
-			AccountID: arg.FromAccountID,
+			AccountID: arg.ToAccountID,
 			Amount: sql.NullInt64{Int64:arg.Amount.Int64, Valid:true},
 		})
 
