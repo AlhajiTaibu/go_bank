@@ -21,7 +21,7 @@ func (server *Server) createEntry(ctx *gin.Context){
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	account, err := server.store.Queries.GetAccount(ctx, req.AccountID)
+	account, err := server.store.GetAccount(ctx, req.AccountID)
 	if err !=nil{
 		if err == sql.ErrNoRows{
 			ctx.IndentedJSON(http.StatusNotFound, errorResponse(err))
@@ -34,7 +34,7 @@ func (server *Server) createEntry(ctx *gin.Context){
 		Amount: sql.NullInt64{Int64:req.Amount, Valid:true},
 	}
 
-	entry, err := server.store.Queries.CreateEntry(ctx, args)
+	entry, err := server.store.CreateEntry(ctx, args)
 
 	if err !=nil{
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
@@ -54,7 +54,7 @@ func (server *Server) getEntry(ctx *gin.Context){
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	entry, err := server.store.Queries.GetEntry(ctx, req.ID)
+	entry, err := server.store.GetEntry(ctx, req.ID)
 
 	if err != nil{
 		if err == sql.ErrNoRows{
@@ -82,7 +82,7 @@ func (server *Server) getEntries(ctx *gin.Context){
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	entries, err := server.store.Queries.ListEntries(ctx, args)
+	entries, err := server.store.ListEntries(ctx, args)
 
 	if err != nil{
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
@@ -111,7 +111,7 @@ func (server *Server) updateEntry(ctx *gin.Context){
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	entry1, err := server.store.Queries.GetEntry(ctx, req1.ID)
+	entry1, err := server.store.GetEntry(ctx, req1.ID)
 
 	if err !=nil{
 		if err == sql.ErrNoRows{
@@ -120,7 +120,7 @@ func (server *Server) updateEntry(ctx *gin.Context){
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
-	account, err := server.store.Queries.GetAccount(ctx, req.AccountID)
+	account, err := server.store.GetAccount(ctx, req.AccountID)
 	if err !=nil{
 		if err == sql.ErrNoRows{
 			ctx.IndentedJSON(http.StatusNotFound, errorResponse(err))
@@ -134,7 +134,7 @@ func (server *Server) updateEntry(ctx *gin.Context){
 		Amount: sql.NullInt64{Int64:req.Amount, Valid:true},
 	}
 
-	entry, err := server.store.Queries.UpdateEntry(ctx, args)
+	entry, err := server.store.UpdateEntry(ctx, args)
 
 	if err !=nil{
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
@@ -150,7 +150,7 @@ func (server *Server) deleteEntry(ctx *gin.Context){
 	if err := ctx.ShouldBindUri(&req); err !=nil{
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
-	err := server.store.Queries.DeleteEntry(ctx, req.ID)
+	err := server.store.DeleteEntry(ctx, req.ID)
 
 	if err !=nil{
 		if err == sql.ErrNoRows{

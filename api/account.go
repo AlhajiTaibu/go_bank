@@ -25,7 +25,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		Balance:  0,
 	}
 
-	account, err := server.store.Queries.CreateAccount(ctx, args)
+	account, err := server.store.CreateAccount(ctx, args)
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
@@ -44,7 +44,7 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	account, err := server.store.Queries.GetAccount(ctx, req.ID)
+	account, err := server.store.GetAccount(ctx, req.ID)
 
 	if err != nil {
 		if err == sql.ErrNoRows{
@@ -53,7 +53,7 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	ctx.IndentedJSON(http.StatusFound, account)
+	ctx.IndentedJSON(http.StatusOK, account)
 }
 
 
@@ -74,13 +74,13 @@ func (server *Server) getAccounts(ctx *gin.Context){
 		Limit: req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
-	accounts, err := server.store.Queries.ListAccounts(ctx, args)
+	accounts, err := server.store.ListAccounts(ctx, args)
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	ctx.IndentedJSON(http.StatusFound, accounts)
+	ctx.IndentedJSON(http.StatusOK, accounts)
 }
 
 
@@ -103,7 +103,7 @@ func (server *Server) updateAccount(ctx *gin.Context){
 		return
 	}
 
-	account1, err := server.store.Queries.GetAccount(ctx, req.ID)
+	account1, err := server.store.GetAccount(ctx, req.ID)
 
 	if err != nil {
 		if err == sql.ErrNoRows{
@@ -135,7 +135,7 @@ func (server *Server) deleteAccount(ctx *gin.Context){
 		return
 	}
 
-	err := server.store.Queries.DeleteAccount(ctx, req.ID)
+	err := server.store.DeleteAccount(ctx, req.ID)
 	
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))

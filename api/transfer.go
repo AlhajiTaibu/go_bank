@@ -48,7 +48,7 @@ func (server *Server) getTransfer(ctx *gin.Context){
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
-	transfer, err := server.store.Queries.GetTransfer(ctx, req.ID)
+	transfer, err := server.store.GetTransfer(ctx, req.ID)
 
 	if err !=nil{
 		if err == sql.ErrNoRows{
@@ -74,7 +74,7 @@ func (server *Server) getTransfers(ctx *gin.Context){
 		Limit: req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
-	transfers, err := server.store.Queries.ListTransfers(ctx, args)
+	transfers, err := server.store.ListTransfers(ctx, args)
 
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
@@ -92,7 +92,7 @@ func (server *Server) deleteTransfer(ctx *gin.Context){
 		return
 	}
 
-	err := server.store.Queries.DeleteTransfer(ctx, req.ID)
+	err := server.store.DeleteTransfer(ctx, req.ID)
 	
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, errorResponse(err))
