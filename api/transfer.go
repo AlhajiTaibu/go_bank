@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	db "github.com/AlhajiTaibu/simplebank/sqlc"
@@ -11,7 +12,7 @@ import (
 
 type createTransferRequest struct {
 	FromAccountID int64 `json:"from_account_id" binding:"required,min=1"`
-	ToAccountID int64 `json:"to_account_id" binding:"required,min-1"`
+	ToAccountID int64 `json:"to_account_id" binding:"required,min=1"`
 	Amount int64 `json:"amount" binding:"required"`
 }
 
@@ -19,13 +20,14 @@ func (server *Server) createTransfer(ctx *gin.Context){
 	var req createTransferRequest
 
 	if err := ctx.ShouldBindJSON(&req); err !=nil{
+		fmt.Println("error:", err)
 		ctx.IndentedJSON(http.StatusBadRequest, errorResponse(err))
 	}
 
 	args := db.TransferMoneyTxParams{
 		FromAccountID: req.FromAccountID,
 		ToAccountID: req.ToAccountID,
-		Amount: sql.NullInt64{Int64: req.Amount, Valid: true},
+		Amount:  req.Amount,
 	}
 	transfer, err := server.store.TransferMoneyTx(ctx, args)
 

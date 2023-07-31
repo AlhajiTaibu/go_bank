@@ -31,7 +31,7 @@ func (server *Server) createEntry(ctx *gin.Context){
 
 	args := db.CreateEntryParams{
 		AccountID: account.ID,
-		Amount: sql.NullInt64{Int64:req.Amount, Valid:true},
+		Amount: req.Amount,
 	}
 
 	entry, err := server.store.CreateEntry(ctx, args)
@@ -97,7 +97,7 @@ type updateEntryRequest struct {
 }
 
 type updateEntryRequestParams struct {
-	ID int64 `uri:"id" binding:"required, min=1"`
+	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) updateEntry(ctx *gin.Context){
@@ -131,7 +131,7 @@ func (server *Server) updateEntry(ctx *gin.Context){
 	args := db.UpdateEntryParams{
 		ID: entry1.ID,
 		AccountID: account.ID,
-		Amount: sql.NullInt64{Int64:req.Amount, Valid:true},
+		Amount: req.Amount,
 	}
 
 	entry, err := server.store.UpdateEntry(ctx, args)

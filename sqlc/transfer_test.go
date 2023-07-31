@@ -2,7 +2,6 @@ package simplebank
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 
 	"github.com/AlhajiTaibu/simplebank/util"
@@ -16,7 +15,7 @@ func createTransfers(t *testing.T) Transfer {
 	args := CreateTransferParams{
 		FromAccountID: account_from.ID,
 		ToAccountID: account_to.ID,
-		Amount: sql.NullInt64{Int64:util.RandomMoney(), Valid: true},
+		Amount: util.RandomMoney(),
 	}
 	transfer, err := testQueries.CreateTransfer(context.Background(), args)
 
@@ -78,7 +77,7 @@ func TestUpdateTransfer(t *testing.T){
 		ID: transfer1.ID,
 		FromAccountID: transfer1.FromAccountID,
 		ToAccountID: transfer1.ToAccountID,
-		Amount: sql.NullInt64{Int64:util.RandomMoney(), Valid:true},
+		Amount: util.RandomMoney(),
 	}
 
 	transfer2, err := testQueries.UpdateTransfer(context.Background(), args)

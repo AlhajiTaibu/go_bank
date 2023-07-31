@@ -2,7 +2,6 @@ package simplebank
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"fmt"
 	"github.com/stretchr/testify/require"
@@ -18,7 +17,7 @@ func TestTransferMoneyTx(t *testing.T){
 	store := NewStore(testDB)
 
 	n := 5
-	amount := sql.NullInt64{Int64:10, Valid:true}
+	amount := int64(10)
 	var results = make(chan TransferTxResult)
 	var errs = make(chan error)
 
@@ -57,13 +56,13 @@ func TestTransferMoneyTx(t *testing.T){
 		require.NotEmpty(t, fromEntry)
 		require.NotZero(t, fromEntry.ID)
 		require.NotZero(t, fromEntry.CreatedAt)
-		require.Equal(t, -amount.Int64, fromEntry.Amount.Int64)
+		require.Equal(t, -amount, fromEntry.Amount)
 
 		toEntry := result.ToEntry
 		require.NotEmpty(t, toEntry)
 		require.NotZero(t, toEntry.ID)
 		require.NotZero(t, toEntry.CreatedAt)
-		require.Equal(t, amount.Int64, toEntry.Amount.Int64)
+		require.Equal(t, amount, toEntry.Amount)
 
 		_, err = store.GetEntry(context.Background(), fromEntry.ID)
 		require.NoError(t, err )
@@ -85,9 +84,9 @@ func TestTransferMoneyTx(t *testing.T){
 
 		require.Equal(t, diff1, diff2)
 		require.True(t, diff1>0)
-		require.True(t, diff1%amount.Int64==0)
+		require.True(t, diff1%amount==0)
 
-		k := diff1/amount.Int64
+		k := diff1/amount
 
 		require.True(t, k>=1 && k<=int64(n))
 	}
@@ -100,8 +99,8 @@ func TestTransferMoneyTx(t *testing.T){
 	require.NoError(t, err)
 
 	fmt.Printf(">>after transaction: from_account=%v, to_account=%v\n", updatedFromAccount.Balance, updatedToAccount.Balance )
-	require.Equal(t, updatedFromAccount.Balance, account_from.Balance-(int64(n)* amount.Int64) )
-	require.Equal(t, updatedToAccount.Balance, account_to.Balance + (int64(n)* amount.Int64))
+	require.Equal(t, updatedFromAccount.Balance, account_from.Balance-(int64(n)* amount) )
+	require.Equal(t, updatedToAccount.Balance, account_to.Balance + (int64(n)* amount))
 }
 
 func TestTransferMoneyTxDeadlock(t *testing.T){
@@ -113,7 +112,7 @@ func TestTransferMoneyTxDeadlock(t *testing.T){
 	store := NewStore(testDB)
 
 	n := 10
-	amount := sql.NullInt64{Int64:10, Valid:true}
+	amount := int64(10)
 	var errs = make(chan error)
 
 	for i:=0; i<n; i++{

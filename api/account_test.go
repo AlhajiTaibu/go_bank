@@ -88,8 +88,63 @@ func TestCreateAccount(t *testing.T){
 	require.Equal(t, http.StatusCreated, recorder.Code)
 }
 
-func convertArgsToJson(args db.CreateAccountParams) (*bytes.Reader, error){
+func convertArgsToJson(args interface{}) (*bytes.Reader, error){
 	json, err := json.Marshal(args)
+	fmt.Println("hola:", args)
 	data := bytes.NewReader(json)
 	return data, err
+}
+
+func TestDeleteAccount(t *testing.T){
+	account := randomAccount()
+
+	ctrl := gomock.NewController(t)
+
+	store := mock.NewMockStore(ctrl)
+
+	store.EXPECT().DeleteAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(nil)
+
+	url := fmt.Sprintf("/accounts/%v", account.ID)
+	request, err := http.NewRequest(http.MethodDelete, url, nil)
+	require.NoError(t, err)
+
+	recorder := httptest.NewRecorder()
+	server := NewServer(store)
+	server.router.ServeHTTP(recorder, request)
+
+	require.Equal(t, http.StatusNoContent, recorder.Code)
+}
+
+func TestUpdateAccount(t *testing.T){
+	account := randomAccount()
+
+	ctrl := gomock.NewController(t)
+
+	store := mock.NewMockStore(ctrl)
+	
+	store.EXPECT().GetAccount(gomock.Any(), gomock.Eq(account.ID)).Times(1).Return(account, nil)
+
+	args := db.UpdateAccountParams{
+		ID: account.ID,
+		Owner: account.Owner,
+		Currency: account.Currency,
+		Balance: util.RandomMoney(),
+	}
+
+	store.EXPECT().UpdateAccount(gomock.Any(), gomock.Eq(args)).Times(1).Return(account, nil)
+	url := fmt.Sprintf("/accounts/%v", account.ID)
+	body, err := convertArgsToJson(args)
+	require.NoError(t, err)
+
+	request, err := http.NewRequest(http.MethodPut, url, body)
+	require.NoError(t, err)
+
+	recorder := httptest.NewRecorder()
+
+	server := NewServer(store)
+
+	server.router.ServeHTTP(recorder, request)
+	requireResponseBodyMatch(t, recorder.Body, account)
+	require.Equal(t, http.StatusOK, recorder.Code)
+
 }

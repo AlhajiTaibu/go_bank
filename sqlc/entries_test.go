@@ -2,7 +2,6 @@ package simplebank
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 
 	"github.com/AlhajiTaibu/simplebank/util"
@@ -13,7 +12,7 @@ func createEntries(t *testing.T) Entry{
 	account := createAccounts(t)
 	args := CreateEntryParams{
 		AccountID: account.ID,
-		Amount: sql.NullInt64{Int64:util.RandomMoney(), Valid: true},
+		Amount: util.RandomMoney(),
 	}
 
 	entry, err := testQueries.CreateEntry(context.Background(), args)
@@ -46,7 +45,7 @@ func TestUpdateEntry(t *testing.T){
 	args := UpdateEntryParams{
 		ID: entry1.ID,
 		AccountID: entry1.AccountID,
-		Amount: sql.NullInt64{Int64:util.RandomMoney(), Valid: true},
+		Amount: util.RandomMoney(),
 	}
 
 	entry2, err := testQueries.UpdateEntry(context.Background(), args)

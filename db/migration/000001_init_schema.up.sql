@@ -9,7 +9,7 @@ CREATE TABLE "accounts" (
 CREATE TABLE "entries" (
   "id" BIGSERIAL PRIMARY KEY,
   "account_id" bigint NOT NULL,
-  "amount" bigint,
+  "amount" bigint NOT NULL,
   "created_at" timestamptz DEFAULT 'now()'
 );
 
@@ -17,7 +17,7 @@ CREATE TABLE "transfers" (
   "id" BIGSERIAL PRIMARY KEY,
   "from_account_id" bigint NOT NULL,
   "to_account_id" bigint NOT NULL,
-  "amount" bigint,
+  "amount" bigint NOT NULL,
   "created_at" timestamptz DEFAULT 'now()'
 );
 

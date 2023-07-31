@@ -45,7 +45,7 @@ func (s *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error{
 type TransferMoneyTxParams struct {
 	FromAccountID int64 `json:"from_account_id"`
 	ToAccountID int64 `json:"to_account_id"`
-	Amount sql.NullInt64 `json:"amount"`
+	Amount int64 `json:"amount"`
 }
 
 type TransferTxResult struct {
@@ -77,7 +77,7 @@ func (s *SQLStore) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParam
 		fmt.Println(txName, "create from_entry" )
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.FromAccountID,
-			Amount: sql.NullInt64{Int64:-arg.Amount.Int64, Valid:true},
+			Amount: -arg.Amount,
 		})
 
 		if err != nil{
@@ -87,7 +87,7 @@ func (s *SQLStore) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParam
 		fmt.Println(txName, "create to_entry" )
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: arg.ToAccountID,
-			Amount: sql.NullInt64{Int64:arg.Amount.Int64, Valid:true},
+			Amount: arg.Amount,
 		})
 
 		if err != nil{
@@ -95,7 +95,7 @@ func (s *SQLStore) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParam
 		}
 
 		if arg.FromAccountID < arg.ToAccountID{
-			result.FromAccount, result.ToAccount, err = transferMoney(ctx, q, arg.FromAccountID, -arg.Amount.Int64, arg.ToAccountID, arg.Amount.Int64)
+			result.FromAccount, result.ToAccount, err = transferMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
 		
 
 		if err != nil{
@@ -103,7 +103,7 @@ func (s *SQLStore) TransferMoneyTx(ctx context.Context, arg TransferMoneyTxParam
 		}
 
 		}else{
-			result.FromAccount, result.ToAccount, err = transferMoney(ctx, q, arg.ToAccountID, arg.Amount.Int64, arg.FromAccountID, -arg.Amount.Int64)
+			result.FromAccount, result.ToAccount, err = transferMoney(ctx, q, arg.ToAccountID, arg.Amount, arg.FromAccountID, -arg.Amount)
 
 
 		if err != nil{
